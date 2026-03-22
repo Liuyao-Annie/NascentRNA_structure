@@ -6,29 +6,29 @@ colnames(result)<-c("order","pearson_r","Significance","group","species")
 for (spe in c("M","R","C")){
   if (spe=="M"){spe1="Mouse"}else if (spe=="R"){spe1="Rat"}else{spe1="Cavia"}
   load(sprintf("%s_tissus_overlapgene.Rdata",spe))
-  mouse_lh<-read.table(sprintf("%s_lh_gene_pearson_o.txt",spe),header = T,stringsAsFactors = F)
-  mouse_bh<-read.table(sprintf("%s_bh_gene_pearson_o.txt",spe),header = T,stringsAsFactors = F)
-  mouse_bl<-read.table(sprintf("%s_bl_gene_pearson_o.txt",spe),header = T,stringsAsFactors = F)
-  mouse_lh_bh<-merge(mouse_lh[,1:3],mouse_bh[,1:3],by="genename")
-  mouse_lh_bh_bl<-merge(mouse_lh_bh,mouse_bl[,1:3],by="genename")
-  mouse_lh_bh_bl<-mouse_lh_bh_bl%>%
+  specie_lh<-read.table(sprintf("%s_lh_gene_pearson_o.txt",spe),header = T,stringsAsFactors = F)
+  specie_bh<-read.table(sprintf("%s_bh_gene_pearson_o.txt",spe),header = T,stringsAsFactors = F)
+  specie_bl<-read.table(sprintf("%s_bl_gene_pearson_o.txt",spe),header = T,stringsAsFactors = F)
+  specie_lh_bh<-merge(specie_lh[,1:3],specie_bh[,1:3],by="genename")
+  specie_lh_bh_bl<-merge(specie_lh_bh,specie_bl[,1:3],by="genename")
+  specie_lh_bh_bl<-specie_lh_bh_bl%>%
     mutate(flag_lh=ifelse(pvalue_l_h<0.05,"P < 0.05","P >= 0.05"),
            flag_bh=ifelse(pvalue_b_h<0.05,"P < 0.05","P >= 0.05"),
            flag_bl=ifelse(pvalue_b_l<0.05,"P < 0.05","P >= 0.05"),
            mean_r=(pearson_l_h+pearson_b_h+pearson_b_l)/3)
   
-  mouse_lh_bh_bl<-mouse_lh_bh_bl%>%
+  specie_lh_bh_bl<-specie_lh_bh_bl%>%
     mutate(flag_blh=ifelse(flag_lh=="P < 0.05" & flag_bh=="P < 0.05" & flag_bl=="P < 0.05" ,"P < 0.05","P >= 0.05"))
-  mouse_lh_bh_bl<-mouse_lh_bh_bl[order(mouse_lh_bh_bl$mean_r),]
-  mouse_lh_bh_bl$order<-1:nrow(mouse_lh_bh_bl)
+  specie_lh_bh_bl<-specie_lh_bh_bl[order(specie_lh_bh_bl$mean_r),]
+  specie_lh_bh_bl$order<-1:nrow(specie_lh_bh_bl)
   
-  data1<-mouse_lh_bh_bl%>%dplyr::select(c("order","mean_r","flag_blh"))%>%mutate(group="Averaged similarity")
+  data1<-specie_lh_bh_bl%>%dplyr::select(c("order","mean_r","flag_blh"))%>%mutate(group="Averaged similarity")
   colnames(data1)<-c("order","pearson_r","Significance","group")
-  data2<-mouse_lh_bh_bl%>%dplyr::select(c("order","pearson_l_h","flag_lh"))%>%mutate(group="Liver-Heart")
+  data2<-specie_lh_bh_bl%>%dplyr::select(c("order","pearson_l_h","flag_lh"))%>%mutate(group="Liver-Heart")
   colnames(data2)<-c("order","pearson_r","Significance","group")
-  data3<-mouse_lh_bh_bl%>%dplyr::select(c("order","pearson_b_h","flag_bh"))%>%mutate(group="Brain-Heart")
+  data3<-specie_lh_bh_bl%>%dplyr::select(c("order","pearson_b_h","flag_bh"))%>%mutate(group="Brain-Heart")
   colnames(data3)<-c("order","pearson_r","Significance","group")
-  data4<-mouse_lh_bh_bl%>%dplyr::select(c("order","pearson_b_l","flag_bl"))%>%mutate(group="Brain-Liver")
+  data4<-specie_lh_bh_bl%>%dplyr::select(c("order","pearson_b_l","flag_bl"))%>%mutate(group="Brain-Liver")
   colnames(data4)<-c("order","pearson_r","Significance","group")
   data<-rbind(data1,data2,data3,data4)
   data<-data%>%mutate(species=spe1)
