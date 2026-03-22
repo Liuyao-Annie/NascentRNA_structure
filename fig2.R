@@ -167,21 +167,21 @@ allgene_phastcos_score_f<-allgene_phastcos_score%>%dplyr::filter(coverage>=0.5)
 
 setwd("/mnt/data6/disk/liuyao/nascentRNA_tissue/correlation/")
 spe="C"
-mouse_lh<-read.table(sprintf("./cds_tissues_p/%s_lh_cds_pearson_o.txt",spe),header = T,stringsAsFactors = F)
-mouse_bh<-read.table(sprintf("./cds_tissues_p/%s_bh_cds_pearson_o.txt",spe),header = T,stringsAsFactors = F)
-mouse_bl<-read.table(sprintf("./cds_tissues_p/%s_bl_cds_pearson_o.txt",spe),header = T,stringsAsFactors = F)
+cavia_lh<-read.table(sprintf("./cds_tissues_p/%s_lh_cds_pearson_o.txt",spe),header = T,stringsAsFactors = F)
+cavia_bh<-read.table(sprintf("./cds_tissues_p/%s_bh_cds_pearson_o.txt",spe),header = T,stringsAsFactors = F)
+cavia_bl<-read.table(sprintf("./cds_tissues_p/%s_bl_cds_pearson_o.txt",spe),header = T,stringsAsFactors = F)
 
-mouse_lh_bh<-merge(mouse_lh[,1:3],mouse_bh[,1:3],by="genename")
-mouse_lh_bh_bl<-merge(mouse_lh_bh,mouse_bl[,1:3],by="genename")
-mouse_lh_bh_bl<-mouse_lh_bh_bl%>%
+cavia_lh_bh<-merge(cavia_lh[,1:3],cavia_bh[,1:3],by="genename")
+cavia_lh_bh_bl<-merge(cavia_lh_bh,cavia_bl[,1:3],by="genename")
+cavia_lh_bh_bl<-cavia_lh_bh_bl%>%
   mutate(flag_lh=ifelse(pvalue_l_h<0.05,"P < 0.05","P >= 0.05"),
          flag_bh=ifelse(pvalue_b_h<0.05,"P < 0.05","P >= 0.05"),
          flag_bl=ifelse(pvalue_b_l<0.05,"P < 0.05","P >= 0.05"),
          pearson_r=(pearson_l_h+pearson_b_h+pearson_b_l)/3)
-mouse_mean_pearson<-mouse_lh_bh_bl%>%dplyr::select(c("genename","pearson_r"))
+cavia_mean_pearson<-cavia_lh_bh_bl%>%dplyr::select(c("genename","pearson_r"))
 
 
-cavia_cdsphastcos_r<-merge(mouse_mean_pearson,allgene_phastcos_score_f,by="genename")
+cavia_cdsphastcos_r<-merge(cavia_mean_pearson,allgene_phastcos_score_f,by="genename")
 cor.test(cavia_cdsphastcos_r$pearson_r,cavia_cdsphastcos_r$phastcos_score,method="s",exact = F)
 ##r=0.136048  p.value=0.000172
 
